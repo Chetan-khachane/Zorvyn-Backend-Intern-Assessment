@@ -125,17 +125,109 @@ const getTransactionById = asyncHandler(async (req,res)=>{
     })
 })
 
+ const updateTransaction = asyncHandler(async (req, res) => {
+  const transaction_id = req.params.id;
+  const { amount, type, category, note } = req.body;
 
-const updateTransaction = asyncHandler(async (req,res)=>{
-    // const transaction_id = req.params.id
-    // const {new_amount,type,category,note} = req.body
-    
-    // await pool.query("UPDATE")
-})
+  const [rows] = await pool.query(
+    "SELECT * FROM transactions WHERE id = ?",
+    [transaction_id]
+  );
 
-const deleteTransaction = asyncHandler(async (req,res)=>{
+  if (rows.length === 0) {
+    return res.status(404).json({ message: "Transaction not found" });
+  }
 
-})
+  const transaction = rows[0];
+
+ const {user} =  req.user
+    const id = user[0][0].id
+  if (
+    req.user.role === "CUSTOMER" &&
+    transaction.user_id !== id //allow only ADMIN and CUSTOMER 
+  ) {
+    return res.status(403).json({ message: "Not allowed" });
+  }
+
+  let type_id = transaction.type_id;
+  if (type) {
+    const [typeResult] = await pool.query(
+      "SELECT id FROM transaction_type WHERE trans_type = ?",
+      [type.toUpperCase()]
+    );
+
+    if (typeResult.length === 0) {
+      return res.status(400).json({ message: "Invalid type" });
+    }
+
+    type_id = typeResult[0].id;
+  }
+
+  
+  let category_id = transaction.category_id;
+  if (category) {
+    const [categoryResult] = await pool.query(
+      "SELECT cat_id FROM category WHERE category = ?",
+      [category.toUpperCase()]
+    );
+
+    if (categoryResult.length === 0) {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+    category_id = categoryResult[0].cat_id;
+  }
+
+  await pool.query(
+    `UPDATE transactions 
+     SET amount = ?, type_id = ?, category_id = ?, note = ?
+     WHERE id = ?`,
+    [
+      amount ?? transaction.amount,
+      type_id,
+      category_id,
+      note ?? transaction.note,
+      transaction_id,
+    ]
+  );
+
+  res.json({ message: "Transaction updated successfully" });
+});
+
+const deleteTransaction = asyncHandler(async (req, res) => {
+  const transaction_id = req.params.id;
 
 
-export {createTransaction,getTransactionById,getTransactions}
+  const [rows] = await pool.query(
+    "SELECT * FROM transactions WHERE id = ?",
+    [transaction_id]
+  );
+
+  if (rows.length === 0) {
+    return res.status(404).json({ message: "Transaction not found" });
+  }
+
+  const transaction = rows[0];
+
+  
+    const {user} =  req.user
+    const id = user[0][0].id
+ 
+  if (
+    req.user.role === "CUSTOMER" &&
+    transaction.user_id !== id
+  ) {
+    return res.status(403).json({ message: "Not allowed" });
+  }
+
+
+  await pool.query(
+    "DELETE FROM transactions WHERE id = ?",
+    [transaction_id]
+  );
+
+  res.json({ message: "Transaction deleted successfully" });
+});
+
+
+export {createTransaction,getTransactionById,getTransactions,updateTransaction,deleteTransaction}

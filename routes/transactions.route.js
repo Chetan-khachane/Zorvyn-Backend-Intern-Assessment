@@ -3,7 +3,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
 import { transactionValidator } from "../validators/index.js";
 import { validate } from "../middlewares/validator.middleware.js"
-import { createTransaction,getTransactionById,getTransaction } from "../controllers/transactions.controller.js";
+import { createTransaction,getTransactionById,getTransactions,updateTransaction,deleteTransaction } from "../controllers/transactions.controller.js";
 
 const router = Router()
 
@@ -31,17 +31,17 @@ router.get(
   getTransactionById
 );
 
-// router.put(
-//   "/:id",
-//   authorizeRoles("CUSTOMER", "ADMIN"),
-//   updateTransaction
-// );
+router.put(
+  "/:id",
+  authorizeRoles("CUSTOMER", "ADMIN"),
+  updateTransaction
+);
 
-// router.delete(
-//   "/:id",
-//   authorizeRoles("CUSTOMER", "ADMIN"),
-//   deleteTransaction
-// );
+router.delete(
+  "/:id",
+  authorizeRoles("CUSTOMER", "ADMIN"),
+  deleteTransaction
+);
 
 
 
