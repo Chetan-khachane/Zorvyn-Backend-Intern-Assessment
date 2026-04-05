@@ -3,7 +3,7 @@ import {body} from "express-validator";
 
 const userRegisterValidator = () =>{
     return [
-        body("userEmail")
+        body("userEmail").optional()
         .trim()
         .notEmpty()
         .withMessage("Email is required")
@@ -43,7 +43,7 @@ const adminEmailValidator = () => {
     .isEmail()
     .withMessage("Invalid Email")
     .contains("mycompany.com")
-    .withMessage("Access Forbidden,Check Email")
+    .withMessage("Access Forbidden,Check Email"),
   ]
 }
 

@@ -5,9 +5,9 @@ import bcrypt from "bcrypt"
 import { v4 as uuidv4 } from 'uuid';
 
 const registerAdmin = asyncHandler(async (req,res)=>{
-    const {name,email,password,role} = req.body
+    const {name,adminEmail,password,role} = req.body
 
-    const [existedUser] = await pool.query("SELECT * from users where email=?",[email])
+    const [existedUser] = await pool.query("SELECT * from users where email=?",[adminEmail])
 
     if(existedUser.length !== 0){//if user already exist in database
         return res.status(409).json({
@@ -17,8 +17,8 @@ const registerAdmin = asyncHandler(async (req,res)=>{
 
     const hashedPassword  = await bcrypt.hash(password,10)
 
-    await pool.query("INSERT INTO users (id,name, email, password,role, is_active) VALUES (?, ?, ?, ?, ?,?)",
-    [uuidv4(),name, email, hashedPassword,"ADMIN", true])
+    await pool.query("INSERT INTO users (id,name, email, password,role_id, is_active) VALUES (?, ?, ?, ?, ?,?)",
+    [uuidv4(),name, adminEmail, hashedPassword,1, true])
 
     res.status(201).json({
         message : "Admin registered successfully"
@@ -36,10 +36,18 @@ const registerUser  = asyncHandler(async (req,res)=>{
         })
     }
 
+    const [result] = await pool.query("SELECT * FROM access_roles WHERE role=?",[userRole.toUpperCase()])
+    
+    if(result.length == 0){
+      return res.status(404).json({
+        "message"  : "Role not found"
+      })
+    }
+    const assignedRole = result[0].id
     const hashedPassword  = await bcrypt.hash(password,10)
 
-    await pool.query("INSERT INTO users (id,name, email, password, role, is_active) VALUES (?, ?, ?, ?, ?,?)",
-    [uuidv4(),name, userEmail, hashedPassword, userRole.toUpperCase() || "VIEWER", true])
+    await pool.query("INSERT INTO users (id,name, email, password, role_id, is_active) VALUES (?, ?, ?, ?, ?,?)",
+    [uuidv4(),name, userEmail, hashedPassword, assignedRole, true])
 
     res.status(201).json({
         message : "User registered successfully"
