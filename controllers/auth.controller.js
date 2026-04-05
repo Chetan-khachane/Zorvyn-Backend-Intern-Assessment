@@ -4,7 +4,7 @@ import { pool } from "../db/db.config.js"
 import bcrypt from "bcrypt"
 import { v4 as uuidv4 } from 'uuid';
 
-const registerUser  = asyncHandler(async (req,res)=>{
+const registerAdmin = asyncHandler(async (req,res)=>{
     const {name,email,password,role} = req.body
 
     const [existedUser] = await pool.query("SELECT * from users where email=?",[email])
@@ -17,8 +17,29 @@ const registerUser  = asyncHandler(async (req,res)=>{
 
     const hashedPassword  = await bcrypt.hash(password,10)
 
+    await pool.query("INSERT INTO users (id,name, email, password,role, is_active) VALUES (?, ?, ?, ?, ?,?)",
+    [uuidv4(),name, email, hashedPassword,"ADMIN", true])
+
+    res.status(201).json({
+        message : "Admin registered successfully"
+    })
+})
+
+const registerUser  = asyncHandler(async (req,res)=>{
+    const {name,userEmail,password,userRole} = req.body
+
+    const [existedUser] = await pool.query("SELECT * from users where email=?",[userEmail])
+
+    if(existedUser.length !== 0){//if user already exist in database
+        return res.status(409).json({
+            message : "User with email already exist"
+        })
+    }
+
+    const hashedPassword  = await bcrypt.hash(password,10)
+
     await pool.query("INSERT INTO users (id,name, email, password, role, is_active) VALUES (?, ?, ?, ?, ?,?)",
-    [uuidv4(),name, email, hashedPassword, role || "viewer", true])
+    [uuidv4(),name, userEmail, hashedPassword, userRole.toUpperCase() || "VIEWER", true])
 
     res.status(201).json({
         message : "User registered successfully"
@@ -159,4 +180,4 @@ const logout = asyncHandler(async (req, res) => {
     .json({ message: "Logged out" });
 });
 
-export {registerUser,login,refreshAccessToken,logout}
+export {registerUser,login,refreshAccessToken,logout,registerAdmin}

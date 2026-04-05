@@ -1,8 +1,9 @@
+import { application } from "express";
 import {body} from "express-validator";
 
 const userRegisterValidator = () =>{
     return [
-        body("email")
+        body("userEmail")
         .trim()
         .notEmpty()
         .withMessage("Email is required")
@@ -30,7 +31,26 @@ const userLoginValidator = () => {
   ];
 };
 
+// Assuming  enterpise application,below i use "mycompany.com" for security of admin's account 
+// and other roles can only be registered by verified admin account
+
+const adminEmailValidator = () => { 
+  return [
+    body("adminEmail")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is Required")
+    .isEmail()
+    .withMessage("Invalid Email")
+    .contains("mycompany.com")
+    .withMessage("Access Forbidden,Check Email")
+  ]
+}
+
+
+
 export  {
     userLoginValidator,
-    userRegisterValidator
+    userRegisterValidator,
+    adminEmailValidator
 }
