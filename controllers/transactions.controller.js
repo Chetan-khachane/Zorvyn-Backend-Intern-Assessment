@@ -81,9 +81,10 @@ const getTransactions = asyncHandler(async (req, res) => {
       query += ` AND t.created_at <= '${to} 23:59:59'`;
     }
 
+    
     if (userRole !== "CUSTOMER") {
       if (userId) query += ` AND t.user_id=${userId}`;
-    } else {
+    } else if(userId) {
       return res.status(403).json({
         message: "CUSTOMER can't perform user id transaction views",
       });

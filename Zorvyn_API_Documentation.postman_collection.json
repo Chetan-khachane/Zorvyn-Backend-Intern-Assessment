@@ -1,0 +1,752 @@
+{
+  "info": {
+    "_postman_id": "c873e45a-1185-4d54-ae76-b7f4f33b270b",
+    "name": "Zorvyn API",
+    "description": "Complete API documentation for Zorvyn financial management system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53754400",
+    "_collection_link": "https://go.postman.co/collection/53754400-c873e45a-1185-4d54-ae76-b7f4f33b270b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Admin",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adminEmail\": \"admin@mycompany.com\",\n  \"password\": \"admin123\",\n  \"name\": \"admin\",\n  \"role\" : \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register-admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register-admin"
+              ]
+            },
+            "description": "Register a new admin user (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userEmail\": \"sam@gmail.com\",\n  \"password\": \"sam1235\",\n  \"name\": \"sam walton\",\n  \"adminEmail\" : \"chetankhachane655@mycompany.com\",\n  \"role\"  :\"ADMIN\",\n  \"userRole\" : \"CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register a new customer user (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.environment.set(\"access_token\", jsonData.data.accessToken);",
+                  "  pm.environment.set(\"refresh_token\", jsonData.data.refreshToken);",
+                  "  pm.environment.set(\"user_id\", jsonData.data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sam@gmail.com\",\n  \"password\": \"sam1235\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login user and receive access and refresh tokens"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refreshToken",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refreshToken"
+              ]
+            },
+            "description": "Get a new access token using refresh token"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Logout current user"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/users/5af34e1a-d562-4b2b-96b4-ef177ca55f1c/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "users",
+                "5af34e1a-d562-4b2b-96b4-ef177ca55f1c",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "5af34e1a-d562-4b2b-96b4-ef177ca55f1c",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Update user active status (Admin only)"
+          },
+          "response": []
+        }
+      ],
+      "description": "User authentication and authorization endpoints"
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Create Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"expense\",\n  \"category\": \"health\",\n  \"amount\": 50688,\n  \"note\": \"Doctor's appointment\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transaction",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transaction"
+              ]
+            },
+            "description": "Create a new transaction (Customer only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transaction?category=food",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transaction"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "food"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-04-06",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "expense",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all transactions with optional filters (Customer, Admin, Analyst)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transaction/3f5fcf41-3a38-44ec-9457-d2a51b8d09cc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transaction",
+                "3f5fcf41-3a38-44ec-9457-d2a51b8d09cc"
+              ]
+            },
+            "description": "Get a specific transaction by ID (Customer, Admin, Analyst)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Transaction",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"travel\",\n  \"amount\": 89854,\n  \"note\": \"Mumbai Travel\",\n  \"type\" : \"expense\" \n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transaction/3f5fcf41-3a38-44ec-9457-d2a51b8d09cc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transaction",
+                "3f5fcf41-3a38-44ec-9457-d2a51b8d09cc"
+              ]
+            },
+            "description": "Update a transaction (Customer, Admin)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transaction/3f5fcf41-3a38-44ec-9457-d2a51b8d09cc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transaction",
+                "3f5fcf41-3a38-44ec-9457-d2a51b8d09cc"
+              ]
+            },
+            "description": "Delete a transaction (Customer, Admin)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Transaction management endpoints"
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "summary"
+              ]
+            },
+            "description": "Get dashboard summary (total income, expenses, balance) (Customer only)"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/dashboard/summary",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "summary"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Summary retrieved successfully\",\n  \"data\": {\n    \"totalIncome\": 5000.00,\n    \"totalExpenses\": 2000.00,\n    \"balance\": 3000.00,\n    \"period\": \"all-time\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Category-wise Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/category-wise",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "category-wise"
+              ]
+            },
+            "description": "Get summary breakdown by transaction categories (Customer only)"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/dashboard/category-wise",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "category-wise"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Category summary retrieved successfully\",\n  \"data\": {\n    \"expenses\": [\n      {\n        \"category\": \"Food\",\n        \"amount\": 500.00,\n        \"percentage\": 25\n      },\n      {\n        \"category\": \"Transportation\",\n        \"amount\": 300.00,\n        \"percentage\": 15\n      }\n    ],\n    \"income\": [\n      {\n        \"category\": \"Salary\",\n        \"amount\": 4000.00,\n        \"percentage\": 80\n      }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Recent Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/recent/10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "recent",
+                "10"
+              ],
+              "variable": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get recent transactions with specified limit (Customer only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trends",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/trends?period=monthly&category=Food",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "trends"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "monthly"
+                },
+                {
+                  "key": "category",
+                  "value": "Food"
+                }
+              ]
+            },
+            "description": "Get transaction trends over time (Customer only)"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/dashboard/trends",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "trends"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "Text",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Trends retrieved successfully\",\n  \"data\": {\n    \"trends\": [\n      {\n        \"date\": \"2024-04-01\",\n        \"amount\": 150.00\n      },\n      {\n        \"date\": \"2024-04-02\",\n        \"amount\": 200.00\n      }\n    ],\n    \"period\": \"month\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "User dashboard and overview endpoints"
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Top Spending",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/top-spending?period=monthly",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "top-spending"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "monthly"
+                }
+              ]
+            },
+            "description": "Get top spending categories (Admin, Analyst only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Top Income",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/top-income?period=monthly",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "top-income"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "monthly"
+                }
+              ]
+            },
+            "description": "Get top income categories (Admin, Analyst only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Analytics Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "summary"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "monthly",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get overall analytics summary (Admin, Analyst only)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Analytics and reporting endpoints"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    }
+  ]
+}
