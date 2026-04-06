@@ -126,11 +126,22 @@ const userTransactionTrendValidator = () =>{
 }
 
 
+const analyticsValidator = () => {
+  return [
+    query("period")
+    .optional()
+    .trim()
+    .isIn(["weekly","monthly","yearly"])
+    .withMessage("period must be in [(weekly,monthly,yearly) only")
+  ]
+}
+
 export  {
     userLoginValidator,
     userRegisterValidator,
     adminEmailValidator,
     transactionValidator,
     viewTransactionValidtor,
-    userTransactionTrendValidator
+    userTransactionTrendValidator,
+    analyticsValidator
 }

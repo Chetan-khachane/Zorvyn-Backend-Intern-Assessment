@@ -19,6 +19,12 @@ export const verifyJWT = asyncHandler(async (req,res,next)=>{
             message : "Invalid Access token",
         })
     }
+
+        if(!user[0][0].is_active){
+            return res.status(403).json({
+                "message" : "User is setted inactive by admin"
+            })
+        }
         req.user = { user , role : decodedToken?.role};
         next();
         

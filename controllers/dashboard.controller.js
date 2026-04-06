@@ -2,11 +2,11 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { pool } from "../db/db.config.js";
 import { query } from "express-validator";
 
-const getSummary = asyncHandler(async (req,res)=>{
-    const {user} =  req.user
-    const id = user[0][0].id
+const getSummary = asyncHandler(async (req, res) => {
+  const { user } = req.user;
+  const id = user[0][0].id;
 
-    const query = `SELECT 
+  const query = `SELECT 
             SUM(CASE WHEN tt.trans_type = 'INCOME' THEN t.amount ELSE 0 END) AS total_income,
             SUM(CASE WHEN tt.trans_type = 'EXPENSE' THEN t.amount ELSE 0 END) AS total_expense,
             SUM(
@@ -18,40 +18,41 @@ const getSummary = asyncHandler(async (req,res)=>{
             FROM transactions t
             JOIN transaction_type tt ON t.type_id = tt.id
             WHERE t.user_id = ?`;
-        
-    const [result] = await pool.query(query,[id])
 
-    res.status(200).json({
-        message : "Summary Generated",
-        summary : result[0]
-    })
-})
+  const [result] = await pool.query(query, [id]);
 
-const getCategoryWiseSummary = asyncHandler(async(req,res)=>{
-    const {user} =  req.user
-    const id = user[0][0].id
+  res.status(200).json({
+    message: "Summary Generated",
+    summary: result[0],
+  });
+});
 
-    const query = `SELECT 
+const getCategoryWiseSummary = asyncHandler(async (req, res) => {
+  const { user } = req.user;
+  const id = user[0][0].id;
+
+  const query = `SELECT 
         c.category,
         SUM(t.amount) AS total
         FROM transactions t
         JOIN category c ON t.category_id = c.cat_id
         WHERE t.user_id = ?
         GROUP BY c.category`;
-        
-    const [result] = await pool.query(query,[id])
-    res.status(200).json({
-        message : "Category Wise Summary Generated",
-        summary : result
-    })
-})
 
-const getRecentTransactions = asyncHandler(async (req,res)=>{
-    const {user} =  req.user
-    const id = user[0][0].id
+  const [result] = await pool.query(query, [id]);
+  res.status(200).json({
+    message: "Category Wise Summary Generated",
+    summary: result,
+    totalTransactions: result.length,
+  });
+});
 
-    const limit = req.params.limit
-    const query = `SELECT 
+const getRecentTransactions = asyncHandler(async (req, res) => {
+  const { user } = req.user;
+  const id = user[0][0].id;
+
+  const limit = req.params.limit;
+  const query = `SELECT 
             t.id,
             t.amount,
             tt.trans_type AS type,
@@ -62,25 +63,24 @@ const getRecentTransactions = asyncHandler(async (req,res)=>{
             JOIN category c ON t.category_id = c.cat_id
             WHERE t.user_id = ?
             ORDER BY t.created_at DESC
-            LIMIT ${limit ? limit : 5};`
+            LIMIT ${limit ? limit : 5};`;
 
-    const [result] = await pool.query(query,[id])
-    res.status(200).json({
-        message : "Category Wise Summary Generated",
-        summary : result
-    })
-
-})
-
+  const [result] = await pool.query(query, [id]);
+  res.status(200).json({
+    message: "Category Wise Summary Generated",
+    summary: result,
+    totalTransactions: result.length,
+  });
+});
 
 const getTrends = asyncHandler(async (req, res) => {
   const { period = "monthly" } = req.query;
 
-  const {user} =  req.user
-  const id = user[0][0].id
+  const { user } = req.user;
+  const id = user[0][0].id;
 
   let query = "";
-  
+
   if (period === "weekly") {
     query = `
             SELECT 
@@ -121,9 +121,10 @@ const getTrends = asyncHandler(async (req, res) => {
 
   const [rows] = await pool.query(query, [id]);
   res.status(200).json({
-    message : `Transaction data for ${period} trend`,
-    transactions : rows
-  })
+    message: `Transaction data for ${period} trend`,
+    transactions: rows,
+    totalTransactions: rows.length,
+  });
 });
 
-export {getSummary,getCategoryWiseSummary,getRecentTransactions,getTrends}
+export { getSummary, getCategoryWiseSummary, getRecentTransactions, getTrends };

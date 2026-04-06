@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
-import { transactionValidator } from "../validators/index.js";
+import { transactionValidator, viewTransactionValidtor } from "../validators/index.js";
 import { validate } from "../middlewares/validator.middleware.js"
 import { createTransaction,getTransactionById,getTransactions,updateTransaction,deleteTransaction } from "../controllers/transactions.controller.js";
 
@@ -21,6 +21,8 @@ router.post(
 router.get(
   "/",
   authorizeRoles("CUSTOMER", "ADMIN", "ANALYST"),
+  viewTransactionValidtor(),
+  validate,
   getTransactions
 );
 

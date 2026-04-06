@@ -4,20 +4,17 @@ import { getSummary,getCategoryWiseSummary,getRecentTransactions,getTrends } fro
 import { userTransactionTrendValidator } from "../validators/index.js";
 import validate from "../middlewares/validator.middleware.js";
 
+import { authorizeRoles } from "../middlewares/role.middleware.js";
+
 const router = Router()
 
 router.use(verifyJWT)
 
-router.get("/summary",getSummary)
-router.get("/category-wise",getCategoryWiseSummary)
-router.get("/recent/:limit",getRecentTransactions)
-router.get("/trends/",userTransactionTrendValidator(),validate,getTrends)
+router.get("/summary",authorizeRoles("CUSTOMER"),getSummary)
+router.get("/category-wise",authorizeRoles("CUSTOMER"),getCategoryWiseSummary)
+router.get("/recent/:limit",authorizeRoles("CUSTOMER"),getRecentTransactions)
+router.get("/trends/",authorizeRoles("CUSTOMER"),userTransactionTrendValidator(),validate,getTrends)
 
 
-
-// GET /dashboard/summary
-// GET /dashboard/category-wise
-// GET /dashboard/recent
-// GET /dashboard/trends
 
 export default router
