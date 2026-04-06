@@ -22,10 +22,15 @@ app.use(
 
 app.use(cookieParser());
 
-import authRouter from "./routes/auth.routes.js"
+import authRouter from "./routes/auth.route.js"
 import transactionRoute from "./routes/transactions.route.js"
+import dashboardRoute from "./routes/dashboard.route.js"
+import analyticsRoute from "./routes/analytics.route.js"
 
 app.use("/auth",authRouter)
 app.use("/transaction",transactionRoute)
+app.use("/dashboard",dashboardRoute)
+app.use("/analytics",analyticsRoute)
+
 
 export default app

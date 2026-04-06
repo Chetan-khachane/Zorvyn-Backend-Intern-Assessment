@@ -59,8 +59,8 @@ const transactionValidator = () =>{
     .trim()
     .notEmpty()
     .withMessage('Category is required')
-    .isIn(['food', 'entertainment','health','travel','clothing','salary','retal_income','business','other'])
-    .withMessage('Category must be either (food, entertainment,health,travel,clothing,salary,retal_income,business,other)'),
+    .isIn(['food', 'entertainment','health','travel','clothing','salary','rental_income','business','other'])
+    .withMessage('Category must be either (food, entertainment,health,travel,clothing,salary,rental_income,business,other)'),
     body('note')
     .optional()
     .isLength({ max: 200 })
@@ -82,8 +82,8 @@ const viewTransactionValidtor = () => {
     .trim()
     .notEmpty()
     .withMessage('Category is required')
-    .isIn(['food', 'entertainment','health','travel','clothing','salary','retal_income','business','other'])
-    .withMessage('Category must be either (food, entertainment,health,travel,clothing,salary,retal_income,business,other)'),
+    .isIn(['food', 'entertainment','health','travel','clothing','salary','rental_income','business','other'])
+    .withMessage('Category must be either (food, entertainment,health,travel,clothing,salary,rental_income,business,other)'),
 
  query("from")
   .optional()
@@ -116,11 +116,21 @@ query("to")
 }
 
 
+const userTransactionTrendValidator = () =>{
+  return [
+    query("period")
+    .optional()
+    .isIn(["weekly","monthly"])
+    .withMessage("period must be in (weekly,monthly) ")
+  ]
+}
+
 
 export  {
     userLoginValidator,
     userRegisterValidator,
     adminEmailValidator,
     transactionValidator,
-    viewTransactionValidtor
+    viewTransactionValidtor,
+    userTransactionTrendValidator
 }
