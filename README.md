@@ -1,4 +1,4 @@
-# Finance Dashboard Backend - Zorvyn
+# Finance Dashboard Backend
 
 > Managing daily financial needs with enterprise product focus
 ---
